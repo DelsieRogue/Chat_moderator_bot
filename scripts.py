@@ -77,3 +77,4 @@ def get_role(user_id):
 def set_role(user_id, to_role_name):
     cur.execute(f"""UPDATE users SET role_id=(SELECT role_id from roles WHERE role_name='{to_role_name}') 
     WHERE user_id={user_id}""")
+    add_order_to_table_orders(user_id)

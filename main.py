@@ -47,13 +47,21 @@ async def buy_subscribe(callback: types.CallbackQuery):
 
 @dp.callback_query_handler(text="bought")
 async def bought(callback: types.CallbackQuery):
-    await bot.send_message(callback.from_user.id, "ваш запрос в обработке")
+    await bot.send_message(callback.from_user.id, "Ваш запрос в обработке")
 
     button_buy_success = InlineKeyboardMarkup(row_width=4, resize_keyboard=True)\
-        .add(InlineKeyboardButton(text="Деньги капнули", callback_data="buy_success" + str(callback.from_user.id)))\
-        .add(InlineKeyboardButton(text="Денег нет сук(", callback_data="buy_failure" + str(callback.from_user.id)))
+        .add(InlineKeyboardButton(text="Одобрить",
+                                  callback_data="buy_success" + str(callback.from_user.id)))\
+        .add(InlineKeyboardButton(text="Отказать",
+                                  callback_data="buy_failure" + str(callback.from_user.id)))
 
-    await bot.send_message(478086330, "user = " + callback.from_user.username, reply_markup=button_buy_success)
+    # await bot.send_message(478086330,
+    #                        "Пользователь " + callback.from_user.username + " оплатил подписку?",
+    #                        reply_markup=button_buy_success)
+    await bot.send_message(1000147881,
+                           "Пользователь " + callback.from_user.username + " оплатил подписку?",
+                           reply_markup=button_buy_success)
+    await callback.message.delete()
     await callback.answer("")
 
 
@@ -61,14 +69,16 @@ async def bought(callback: types.CallbackQuery):
 async def buy_success(callback: types.CallbackQuery):
     user_id = int(callback.data.replace("buy_success", ""))
     set_role(user_id, "USER")
-    await bot.send_message(user_id, "Это успех")
+    await bot.send_message(user_id, "Подписка успешно оформлена.")
+    await callback.message.delete()
     await callback.answer("")
 
 
 @dp.callback_query_handler(lambda c: c.data.startswith('buy_failure'))
 async def buy_failure(callback: types.CallbackQuery):
     user_id = int(callback.data.replace("buy_failure", ""))
-    await bot.send_message(user_id, "Плати пидор", reply_markup=button_paid)
+    await bot.send_message(user_id, "Платеж не действителен", reply_markup=button_paid)
+    await callback.message.delete()
     await callback.answer("")
 
 
