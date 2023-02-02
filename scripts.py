@@ -72,3 +72,8 @@ def get_users_from_db(roles):
 def get_role(user_id):
     return cur.execute(f"""SELECT r.role_name FROM (SELECT * FROM users us WHERE us.user_id={user_id}) u 
     LEFT JOIN roles r ON r.role_id=u.role_id""").fetchone()
+
+
+def set_role(user_id, to_role_name):
+    cur.execute(f"""UPDATE users SET role_id=(SELECT role_id from roles WHERE role_name='{to_role_name}') 
+    WHERE user_id={user_id}""")

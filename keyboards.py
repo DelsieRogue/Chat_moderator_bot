@@ -22,11 +22,15 @@ kb2 = [
 
 users_buttons = ReplyKeyboardMarkup(row_width=4, resize_keyboard=True).add(*kb2)
 
-kb3 = [
-    InlineKeyboardButton(text="buy", url="https://t.me/ildan7m"),
-]
+buttons_pay = {
+    "Оплатить": InlineKeyboardButton(text="Оплатить", callback_data="buy_subscribe"),
+    "Подтвердить оплату": InlineKeyboardButton(text="Подтверждаю оплату", callback_data="bought"),
+}
 
-other_people_buttons = InlineKeyboardMarkup(row_width=4, resize_keyboard=True).add(*kb3)
+button_to_pay = InlineKeyboardMarkup(row_width=4, resize_keyboard=True).add(buttons_pay.get("Оплатить"))
+button_paid = InlineKeyboardMarkup(row_width=4, resize_keyboard=True).add(buttons_pay.get("Подтвердить оплату"))
+
+
 
 
 async def get_menu(message: types.Message):
@@ -42,7 +46,7 @@ async def get_menu(message: types.Message):
         return await bot.send_message(chat_id=message.chat.id, text="commands", reply_markup=users_buttons)
 
     return await bot.send_message(chat_id=message.chat.id, text="Купить подписку",
-                                  reply_markup=other_people_buttons)
+                                  reply_markup=button_to_pay)
 
 
 async def get_inline_buttons(roles):
