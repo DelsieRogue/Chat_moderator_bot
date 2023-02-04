@@ -62,6 +62,7 @@ async def bought(callback: types.CallbackQuery):
                            "Пользователь " + callback.from_user.username + " оплатил подписку?",
                            reply_markup=button_buy_success)
     await callback.message.delete()
+
     await callback.answer("")
 
 
