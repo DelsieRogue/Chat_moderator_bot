@@ -1,42 +1,38 @@
 from aiogram import types
+from aiogram.dispatcher import filters
 from aiogram.dispatcher.filters import Text
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, ChatMemberAdministrator
 from aiogram.utils import executor
 
-from keyboards import get_inline_buttons, get_menu, button_paid, button_to_pay
+from keyboards import get_inline_buttons, get_menu, button_paid
 from scripts import set_role
 from utils import dp, bot
 
 
-@dp.message_handler(commands=['start'])
+@dp.message_handler(filters.ChatTypeFilter(types.ChatType.PRIVATE), commands=['start'])
 async def start(message: types.Message):
     await get_menu(message)
 
 
-# @dp.message_handler(commands=['add_user'])
-# async def add_user(message: types.Message):
-#     await bot.send_message(message.from_user.id, set_role(message, "USER"))
-
-
-@dp.message_handler(Text("GODS"))
+@dp.message_handler(filters.ChatTypeFilter(types.ChatType.PRIVATE), Text("GODS"))
 async def get_superadmins(message: types.Message):
     await bot.send_message(message.from_user.id, "Список королей",
                            reply_markup=await get_inline_buttons(["SUPER_ADMIN"]))
 
 
-@dp.message_handler(Text("ADMINS"))
+@dp.message_handler(filters.ChatTypeFilter(types.ChatType.PRIVATE), Text("ADMINS"))
 async def get_admins(message: types.Message):
     await bot.send_message(message.from_user.id, "Cписок админов", reply_markup=await get_inline_buttons(["ADMIN"]))
 
 
-@dp.message_handler(Text("USERS"))
+@dp.message_handler(filters.ChatTypeFilter(types.ChatType.PRIVATE), Text("USERS"))
 async def get_users(message: types.Message):
     await bot.send_message(message.from_user.id, "Список клиентов", reply_markup=await get_inline_buttons(["USER"]))
 
 
-@dp.message_handler(Text("EX USERS"))
+@dp.message_handler(filters.ChatTypeFilter(types.ChatType.PRIVATE), Text("NO USERS"))
 async def get_ex_users(message: types.Message):
-    await bot.send_message(message.from_user.id, "Список бывших", reply_markup=await get_inline_buttons(["EX_USER"]))
+    await bot.send_message(message.from_user.id, "Список бывших", reply_markup=await get_inline_buttons(["NO_USER"]))
 
 
 @dp.callback_query_handler(text="buy_subscribe")
@@ -68,7 +64,7 @@ async def buy_success(callback: types.CallbackQuery):
 @dp.callback_query_handler(lambda c: c.data.startswith('buy_failure'))
 async def buy_failure(callback: types.CallbackQuery):
     user_id = int(callback.data.replace("buy_failure", ""))
-    await bot.send_message(user_id, "Плати пидор", reply_markup=button_paid)
+    await bot.send_message(user_id, "Платеж не подтвержден", reply_markup=button_paid)
     await callback.answer("")
 
 
